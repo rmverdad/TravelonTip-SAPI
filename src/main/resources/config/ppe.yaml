@@ -1,0 +1,17 @@
+http:
+  listener:
+    host: "0.0.0.0"
+    port: "9083"
+  requester:
+    host: "localhost"
+    port: "9081"
+    path:  
+      routes: "/travelontip/routes"
+      schedules: "/travelontip/schedules"
+    
+sql:
+  host: "sql12.freesqldatabase.com"
+  port: "3306"
+  user: "sql12597378"
+  pass: "dyMNcGRjBu"
+  db: "sql12597378"

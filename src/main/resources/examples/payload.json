@@ -1,0 +1,16 @@
+[
+  {
+    "availableSeats": 40,
+    "companyName": "TravelOnTip",
+    "destinationLocationCode": "MKT",
+    "departureDate": "2023-02-09T04:18:18",
+    "originLocationCode": "MNL"
+  },
+  {
+    "availableSeats": 30,
+    "companyName": "TravelOnTip",
+    "destinationLocationCode": "MNL",
+    "departureDate": "2023-02-10T08:34:29",
+    "originLocationCode": "MKT"
+  }
+]

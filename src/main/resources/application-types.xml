@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="routes" format="json">
+      <types:shape format="weave" example="api/libraries/routes/examples/getRoutes-200Response-example.json"><![CDATA[%dw 2.0
+
+type routes = Array<{|  originLocation: {| locationCode: String |},   destinationLocation: {| locationCode: String |}|}> {"example": "[{\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BEN-SG\\\"},\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"}},{\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BEN-SG\\\"},\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"}}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="schedules_example" format="json">
+      <types:shape format="weave" example="api/libraries/schedules/examples/getSchedules-200Response-example.json"><![CDATA[%dw 2.0
+
+type schedules_example = Array<{|  availableSeats: Number {"typeId": "int"},   departureDateTime: String,   travelRoute: {|    destinationLocation: {| locationCode: String |},     originLocation: {| locationCode: String |}  |}|}> {"example": "[{\\\"availableSeats\\\":20,\\\"departureDateTime\\\":\\\"2019-04-30T16:41:41.090Z\\\",\\\"travelRoute\\\":{\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"},\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BEN-SG\\\"}}},{\\\"availableSeats\\\":30,\\\"departureDateTime\\\":\\\"2019-04-30T16:41:41.090Z\\\",\\\"travelRoute\\\":{\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"},\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BL-SG\\\"}}}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="sched_db" format="json">
+      <types:shape format="weave" example="examples/payload.json"><![CDATA[%dw 2.0
+
+type sched_db = Array<{|  availableSeats: Number {"typeId": "int"},   companyName: String,   destinationLocationCode: String,   departureDate: String,   originLocationCode: String|}> {"example": "[{\\\"availableSeats\\\":40,\\\"companyName\\\":\\\"TravelOnTip\\\",\\\"destinationLocationCode\\\":\\\"MKT\\\",\\\"departureDate\\\":\\\"2023-02-09T04:18:18\\\",\\\"originLocationCode\\\":\\\"MNL\\\"},{\\\"availableSeats\\\":30,\\\"companyName\\\":\\\"TravelOnTip\\\",\\\"destinationLocationCode\\\":\\\"MNL\\\",\\\"departureDate\\\":\\\"2023-02-10T08:34:29\\\",\\\"originLocationCode\\\":\\\"MKT\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#926f7488-d8e1-4ae3-8a31-690320ae7798"/>
+  <types:enrichment select="#1d00c3c6-c1e6-4997-9a11-e01e07acccaa">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="sched_db"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="schedules_example"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

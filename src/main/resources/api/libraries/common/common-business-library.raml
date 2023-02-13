@@ -1,0 +1,8 @@
+#%RAML 1.0 Library
+usage:
+traits:
+  transactionId: !include traits/headers-transactionId-traits.raml
+  departureLocationCode: !include traits/queryParams-departureLocationCode-traits.raml
+  destinationLocationCode: !include traits/queryParams-destinationlocationCode-traits.raml
+types:
+  commonError: !include dataTypes/common-error-dataType.raml

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getScehdulesFlow" doc:id="392ed194-36a2-4c43-a435-ad01a819927d" >
+		<logger level="INFO" doc:name="entry log" doc:id="30e52056-a459-4e13-8f74-b048254dfa59" message="Request Received for TransactionID : #[vars.transactionId]"/>
+		<flow-ref doc:name="set variables" doc:id="020643df-3377-4998-8bf7-7f3132645f00" name="setVars" />
+		<http:request method="GET" doc:name=" schedules" doc:id="62c5bbcf-2bf8-4506-8588-433617fb3964" config-ref="HTTP_Request_configuration" path="${http.requester.path.schedules}" sendCorrelationId="NEVER">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	transactionId : vars.transactionId
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="1d00c3c6-c1e6-4997-9a11-e01e07acccaa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	availableSeats: payload01.availableSeats,
+	departureDateTime: payload01.departureDate,
+	travelRoute: {
+		destinationLocation: {
+			locationCode: payload01.destinationLocationCode
+		},
+		originLocation: {
+			locationCode: payload01.originLocationCode
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+
+	</flow>
+	</mule>

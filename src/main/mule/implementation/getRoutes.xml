@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getRoutesFlow" doc:id="1f2efab6-d027-47fa-ae2a-0f21c693c571" >
+		<logger level="INFO" doc:name="entry log" doc:id="8160ce4b-25f7-4b32-b9dc-7ae5a6c781c2" message="Request Received for TransactionID : #[vars.transactionId]" />
+		<flow-ref doc:name="set variables" doc:id="d294ae58-c96e-405f-911e-3bab46881f09" name="setVars" />
+		<http:request method="GET" doc:name=" routes" doc:id="e5609d46-4a27-4124-bee7-0a33a3dedf1a" config-ref="HTTP_Request_configuration" path="${http.requester.path.routes}" sendCorrelationId="NEVER">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	transactionId : vars.transactionId
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="926f7488-d8e1-4ae3-8a31-690320ae7798" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+	originLocation : {
+		locationCode: item.originLocationCode
+	},
+	destinationLocation:{
+		locationCode: item.destinationLocationCode
+	}
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		
+	
+	
+</flow>
+</mule>
