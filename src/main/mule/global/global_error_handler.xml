@@ -84,7 +84,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform>
+			<ee:transform>
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -96,20 +96,8 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-	<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="74818cdd-000e-4394-95fb-6f18b813df96" type="ANY">
-				<ee:transform doc:name="Transform Message" doc:id="6d9b9b4d-71d7-4b98-944b-ffb9b17c12b6">
-					<ee:message>
-						<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-{
-	message: "Critical Error"
-}]]></ee:set-payload>
-					</ee:message>
-				</ee:transform>
-			</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0f950edd-746a-4fde-8472-2dc8ad864f8a" type="HTTP:CONNECTIVITY">
-				<ee:transform doc:name="Transform Message" doc:id="5f6f7605-1d5d-4298-8a4d-2e43a5592eb1">
+	<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="74818cdd-000e-4394-95fb-6f18b813df96" type="HTTP:CONNECTIVITY">
+			<ee:transform doc:name="Transform Message" doc:id="5f6f7605-1d5d-4298-8a4d-2e43a5592eb1">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -119,7 +107,21 @@ output application/json
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
+
 			</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0f950edd-746a-4fde-8472-2dc8ad864f8a" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="6d9b9b4d-71d7-4b98-944b-ffb9b17c12b6">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	message: "Critical Error"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			
+</on-error-propagate>
 	
 	
 </error-handler>

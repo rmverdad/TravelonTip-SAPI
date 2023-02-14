@@ -23,7 +23,20 @@ type sched_db = Array<{|  availableSeats: Number {"typeId": "int"},   companyNam
 ]]></types:shape>
     </types:type>
   </types:catalog>
-  <types:enrichment select="#926f7488-d8e1-4ae3-8a31-690320ae7798"/>
+  <types:enrichment select="#926f7488-d8e1-4ae3-8a31-690320ae7798">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="routes"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="routes"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
   <types:enrichment select="#1d00c3c6-c1e6-4997-9a11-e01e07acccaa">
     <types:processor-declaration>
       <types:input-event>
