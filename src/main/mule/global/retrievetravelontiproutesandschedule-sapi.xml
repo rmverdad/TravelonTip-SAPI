@@ -27,9 +27,9 @@
         <apikit:console config-ref="retrievetravelontiproutesandschedule-sapi-config" />
     </flow>
     <flow name="get:\(transportType)\(transportCompany)\routes:retrievetravelontiproutesandschedule-sapi-config">
-		<flow-ref doc:name="get routes" doc:id="da08bc9c-b92f-4bb4-8005-32b77f1e5488" name="getRoutesFlow"/>
+		<flow-ref doc:name="get routes" doc:id="da08bc9c-b92f-4bb4-8005-32b77f1e5488" name="getRoutesSub_Flow"/>
     </flow>
 	<flow name="get:\(transportType)\(transportCompany)\schedules:retrievetravelontiproutesandschedule-sapi-config">
-		<flow-ref doc:name="get schedules" doc:id="99768bcc-0cd2-4548-ab0f-0af460047414" name="getScehdulesFlow"/>
+		<flow-ref doc:name="get schedules" doc:id="99768bcc-0cd2-4548-ab0f-0af460047414" name="getSchedulesSub_Flow"/>
     </flow>
 </mule>

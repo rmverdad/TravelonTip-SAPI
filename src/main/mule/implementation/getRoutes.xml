@@ -6,19 +6,39 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<flow name="getRoutesFlow" doc:id="1f2efab6-d027-47fa-ae2a-0f21c693c571" >
-		<logger level="INFO" doc:name="entry log" doc:id="8160ce4b-25f7-4b32-b9dc-7ae5a6c781c2" message="Request Received for TransactionID : #[vars.transactionId]" />
-		<flow-ref doc:name="set variables" doc:id="d294ae58-c96e-405f-911e-3bab46881f09" name="setVars" />
+	<sub-flow name="requestRoutes" doc:id="eb3b7030-56df-4e9e-b9ce-bec00283d391" >
 		<http:request method="GET" doc:name=" routes" doc:id="e5609d46-4a27-4124-bee7-0a33a3dedf1a" config-ref="HTTP_Request_configuration" path="${http.requester.path.routes}" sendCorrelationId="NEVER">
-			<http:headers ><![CDATA[#[output application/java
+			<http:headers><![CDATA[#[output application/java
 ---
 {
 	transactionId : vars.transactionId
 }]]]></http:headers>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="926f7488-d8e1-4ae3-8a31-690320ae7798" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<logger level="INFO" doc:name="Logger" doc:id="073f536f-16bf-4d4a-8913-d687808222e8" />
+		<choice doc:name="Choice" doc:id="802e8176-9676-4132-a125-2fcb51545728">
+			<when expression='#[vars.transportType != "all" and  vars.transportType != "All"]'>
+				<ee:transform doc:name="filter by transport type" doc:id="926f7488-d8e1-4ae3-8a31-690320ae7798">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var transportType = upper(vars.transportType)
+var newpayload = payload filter ((value,index)->upper(value.transportType) == transportType)
+---
+newpayload map ((item, index) -> {
+	originLocation : {
+		locationCode: item.originLocationCode
+	},
+	destinationLocation:{
+		locationCode: item.destinationLocationCode
+	}
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="filter by transport type" doc:id="b3866db0-aa65-436e-9a76-6d9475a0a1d1">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload map ((item, index) -> {
@@ -31,8 +51,13 @@ payload map ((item, index) -> {
 })]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		
-	
-	
-</flow>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="d0cb80ef-ac5a-4c1a-9ac4-1e2780bfab97" message="Filter by transportType success" />
+	</sub-flow>
+	<sub-flow name="getRoutesSub_Flow" doc:id="3db57e59-ebb7-4c3a-a1a3-f3fbfd45bccd" >
+		<logger level="INFO" doc:name="entry log" doc:id="8160ce4b-25f7-4b32-b9dc-7ae5a6c781c2" message="Request Received for TransactionID : #[vars.transactionId]" />
+		<flow-ref doc:name="set variables" doc:id="d294ae58-c96e-405f-911e-3bab46881f09" name="setVars" />
+		<flow-ref doc:name="Flow Reference" doc:id="bcd1175d-33d8-4bfd-91cd-cfd0050352d6" name="requestRoutes" />
+	</sub-flow>
 </mule>

@@ -18,10 +18,25 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	</http:request-config>
 	<configuration doc:name="Configuration" doc:id="a9eca79f-50bc-4d18-b750-63084accad40" defaultErrorHandler-ref="global_error_handlerError_Handler" />
 	<sub-flow name="setVars" doc:id="976afbc4-2b34-4029-83ee-4012e570a0de" >
-		<set-variable value="#[message.attributes.headers.transacitonId]" doc:name="transactionId" doc:id="67e5b474-854c-49b1-aeac-4365477139dd" variableName="transactionId" />
-		<set-variable value="#[message.attributes.uriParams.transportType]" doc:name="transportType" doc:id="5a5d8060-95f3-4419-ac8f-fa1e569ca8d0" variableName="transportType" />
-		<set-variable value="#[message.attributes.uriParams.transportCompany]" doc:name="transportCompany" doc:id="45e754cf-972e-4a60-9331-1732ce571842" variableName="company" />
-	</sub-flow>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="9e6da893-bade-4d21-a155-ed5b4beb433c" >
+			<route >
+				<set-variable value="#[message.attributes.headers.transacitonId]" doc:name="transactionId" doc:id="67e5b474-854c-49b1-aeac-4365477139dd" variableName="transactionId" />
+			</route>
+			<route >
+				<set-variable value='#[message.attributes.uriParams.transportType default "all"]' doc:name="transportType" doc:id="5a5d8060-95f3-4419-ac8f-fa1e569ca8d0" variableName="transportType" />
+			</route>
+			<route >
+				<set-variable value="#[message.attributes.uriParams.transportCompany]" doc:name="transportCompany" doc:id="45e754cf-972e-4a60-9331-1732ce571842" variableName="company" />
+			</route>
+			<route >
+				<set-variable value="#[message.attributes.queryParams.departureLocationCode]" doc:name="origin location" doc:id="e5e81ace-dd51-4bbb-abc3-5bc4d5ea7366" variableName="orgLoc" />
+			</route>
+			<route >
+				<set-variable value="#[message.attributes.queryParams.destinationLocationCode]" doc:name="destination location" doc:id="36956d00-f9e7-45b2-82b3-951b23c6bab2" variableName="destLoc" />
+			</route>
+		</scatter-gather>
+	
+</sub-flow>
 	
     
 </mule>

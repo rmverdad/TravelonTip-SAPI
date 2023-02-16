@@ -5,20 +5,23 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<flow name="getScehdulesFlow" doc:id="392ed194-36a2-4c43-a435-ad01a819927d" >
-		<logger level="INFO" doc:name="entry log" doc:id="30e52056-a459-4e13-8f74-b048254dfa59" message="Request Received for TransactionID : #[vars.transactionId]"/>
-		<flow-ref doc:name="set variables" doc:id="020643df-3377-4998-8bf7-7f3132645f00" name="setVars" />
+	<sub-flow name="requestSchedules" doc:id="17a2da92-c2b8-4c41-824c-5d312a68b5db" >
 		<http:request method="GET" doc:name=" schedules" doc:id="62c5bbcf-2bf8-4506-8588-433617fb3964" config-ref="HTTP_Request_configuration" path="${http.requester.path.schedules}" sendCorrelationId="NEVER">
-			<http:headers ><![CDATA[#[output application/java
+			<http:headers><![CDATA[#[output application/java
 ---
 {
 	transactionId : vars.transactionId
 }]]]></http:headers>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="1d00c3c6-c1e6-4997-9a11-e01e07acccaa" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<logger level="INFO" doc:name="Logger" doc:id="89dcd6ba-7bc7-45ec-94fa-5f943869e734" message="HTTP request success" />
+		<choice doc:name="Choice" doc:id="af72a917-23b4-4575-a970-e4e2c0dea1c3">
+			<when expression='#[vars.transportType != "all" and vars.transportType != "All"]'>
+				<ee:transform doc:name="Transform Message" doc:id="1d00c3c6-c1e6-4997-9a11-e01e07acccaa">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
+var transportType = upper(vars.transportType)
+var newpayload = payload filter((value,index)->upper(value.transportType)==transportType)
 ---
 payload map ( payload01 , indexOfPayload01 ) -> {
 	availableSeats: payload01.availableSeats,
@@ -34,6 +37,104 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-
-	</flow>
-	</mule>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="723c3684-448e-4493-8392-7c822918276f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	availableSeats: payload01.availableSeats,
+	departureDateTime: payload01.departureDate,
+	travelRoute: {
+		destinationLocation: {
+			locationCode: payload01.destinationLocationCode
+		},
+		originLocation: {
+			locationCode: payload01.originLocationCode
+		}
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="09610ec3-75ca-4bde-abf5-465d9b88cdb8" message="inital filter success" />
+	</sub-flow>
+	<sub-flow name="getSchedulesSub_Flow" doc:id="6422b11b-35e3-4124-a14c-404a4d515392" >
+		<logger level="INFO" doc:name="entry log" doc:id="30e52056-a459-4e13-8f74-b048254dfa59" message="Request Received for TransactionID : #[vars.transactionId]" />
+		<flow-ref doc:name="set variables" doc:id="020643df-3377-4998-8bf7-7f3132645f00" name="setVars" />
+		<flow-ref doc:name="request" doc:id="3067fa0b-3070-4e16-a184-b568a8bec22a" name="requestSchedules" />
+		<flow-ref doc:name="filter by location" doc:id="589ac475-97b1-4ac0-9c18-c378dcf4c94a" name="locationFilterFlow"/>
+	</sub-flow>
+	<sub-flow name="locationFilterFlow" doc:id="773ff100-3ce1-4f52-ae08-d87e332c7355" >
+		<choice doc:name="Choice" doc:id="2dc31495-7d1c-4d63-91f6-2de645e1f02f" >
+			<when expression="#[!(isEmpty(vars.destLoc)) and !(isEmpty(vars.orgLoc))]" >
+				<ee:transform doc:name="filter by both origin and destination location" doc:id="286f2ce2-0477-40fb-9e5b-6d46db83e07d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var origin = upper(vars.orgLoc)
+var destination = upper(vars.destLoc)
+fun getLoc(loc:Array) =do{
+    var newLoc = (loc)reduce($$++$)
+    ---
+    upper(newLoc)
+}
+var filterByOrigin = payload filter ((item,index)->getLoc(item..originLocation.locationCode) == origin)
+var finalFilter = filterByOrigin filter ((item,index)->getLoc(item..destinationLocation.locationCode) == destination)
+---
+finalFilter]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[!(isEmpty(vars.destLoc)) and isEmpty(vars.orgLoc)]" >
+				<ee:transform doc:name="filter by destination" doc:id="7d8c5572-0c96-43aa-a211-4fabfa8bbd85" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var dest = vars.destLoc
+fun getLoc(loc:Array) =do{
+    var newLoc = (loc)reduce($$++$)
+    ---
+    upper(newLoc)
+}
+var filterByDestination = payload filter ((item,index)->getLoc(item..destinationLocation.locationCode) == upper(vars.destLoc))
+---
+filterByDestination]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[isEmpty(vars.destLoc) and !(isEmpty(vars.orgLoc))]" >
+				<ee:transform doc:name="filter by origin" doc:id="d5c45169-71b1-4c69-99d4-16b5df46f48e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var origin = vars.orgLoc
+fun getLoc(loc:Array) =do{
+    var newLoc = (loc)reduce($$++$)
+    ---
+    upper(newLoc)
+}
+var filterByOrigin = payload filter ((item,index)-> getLoc(item..originLocation.locationCode) == upper(origin))
+---
+filterByOrigin]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="no filter" doc:id="55b4a7a4-fb80-496e-b65d-78337235d8c9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="96ff9302-58db-43d6-b1f3-68d2b0231baf" message="Filter By Location Success" />
+	</sub-flow>
+	
+</mule>
