@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="retrievetravelontiproutesandschedule-sapi-test-suite.xml" />
+	<munit:test name="get-routes-all-test" doc:id="1e2249c6-8395-43c5-bd44-a18d96c2ada0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="772c5021-2ae4-4f59-92f9-a2c570bc976b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e5609d46-4a27-4124-bee7-0a33a3dedf1a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;  {&#10;    "availableSeats": 40,&#10;    "transportType": "Bus",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MKT",&#10;    "departureDate": "2023-02-09T04:18:18",&#10;    "originLocationCode": "MNL"&#10;  },&#10;  {&#10;    "availableSeats": 30,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-02-10T08:34:29",&#10;    "originLocationCode": "MKT"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "KLG-MY",&#10;    "departureDate": "2022-12-09T13:30:00",&#10;    "originLocationCode": "BEN-SG"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "BL-SG",&#10;    "departureDate": "2023-02-17T17:35:00",&#10;    "originLocationCode": "KLG-MY"&#10;  },&#10;  {&#10;    "availableSeats": 100,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-03-09T09:25:00",&#10;    "originLocationCode": "PSG"&#10;  }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="45aeac61-0638-485e-9038-6db9edccf660" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b3866db0-aa65-436e-9a76-6d9475a0a1d1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call>
+					<munit-tools:assert doc:name="Assert expression" doc:id="2d775ec7-91ae-479b-b8bc-09fa167e9314" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="f79c95e5-df3c-46a2-952a-54ca9de2c50e" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload1
+ ---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="fc860069-0f7c-4d59-ad26-a1e7f30364eb" >
+				<munit:attributes value='#["uriParams": {"tranportType": "All","transportCompany": "travelontip"}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\(transportType)\(transportCompany)\routes:retrievetravelontiproutesandschedule-sapi-config" doc:id="50bb4352-8777-487c-a618-4bc869b7e681" name="get:\(transportType)\(transportCompany)\routes:retrievetravelontiproutesandschedule-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="399c7526-e7cf-4422-a9f5-c6c11ecf34b5" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8160ce4b-25f7-4b32-b9dc-7ae5a6c781c2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="7fc2c60a-3eb8-4d26-8281-7f32ba09d492" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="073f536f-16bf-4d4a-8913-d687808222e8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="03faf104-d117-4ced-8416-5093f432fe62" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d0cb80ef-ac5a-4c1a-9ac4-1e2780bfab97" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-routes-with-transportType-test1" doc:id="b8ea4489-1bed-4870-b7d1-1c3f5b5aba38" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2fb1e7bd-b808-4f52-9ab4-0f8b45faa29e" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e5609d46-4a27-4124-bee7-0a33a3dedf1a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;  {&#10;    "availableSeats": 40,&#10;    "transportType": "Bus",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MKT",&#10;    "departureDate": "2023-02-09T04:18:18",&#10;    "originLocationCode": "MNL"&#10;  },&#10;  {&#10;    "availableSeats": 30,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-02-10T08:34:29",&#10;    "originLocationCode": "MKT"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "KLG-MY",&#10;    "departureDate": "2022-12-09T13:30:00",&#10;    "originLocationCode": "BEN-SG"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "BL-SG",&#10;    "departureDate": "2023-02-17T17:35:00",&#10;    "originLocationCode": "KLG-MY"&#10;  },&#10;  {&#10;    "availableSeats": 100,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-03-09T09:25:00",&#10;    "originLocationCode": "PSG"&#10;  }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="31b6a1a6-eed0-4ab2-9733-e5b17aafc6e9" processor="ee:transform" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b3866db0-aa65-436e-9a76-6d9475a0a1d1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="3858a367-0e7a-477f-834c-27838a2a4603" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="309347eb-0ebc-4d84-9f02-b4658e7c8c36" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload2
+ ---
+spy_assert_payload2::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="67430fec-db1c-4b36-87c4-332377db72fb" >
+				<munit:attributes value='#["uriParams": {"tranportType": "bus","transportCompany": "travelontip"}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\(transportType)\(transportCompany)\routes:retrievetravelontiproutesandschedule-sapi-config" doc:id="7dd7538d-413d-4728-83ff-5b25335a3de3" name="get:\(transportType)\(transportCompany)\routes:retrievetravelontiproutesandschedule-sapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="73659427-fdcf-4d97-bb93-c4109ffeec15" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8160ce4b-25f7-4b32-b9dc-7ae5a6c781c2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call1" doc:id="5d6a9b05-bc1d-4563-bc08-1920266d8410" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="073f536f-16bf-4d4a-8913-d687808222e8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call2" doc:id="ca17ca57-09c7-400a-8135-2ecdc4c2d502" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d0cb80ef-ac5a-4c1a-9ac4-1e2780bfab97" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-routes-invalid-test" doc:id="8d87148e-0af7-4ea8-9f23-7f74c71cccc7" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="809a89b8-d84f-46fa-b8d0-3f0204cf8e10" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e5609d46-4a27-4124-bee7-0a33a3dedf1a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;  {&#10;    "availableSeats": 40,&#10;    "transportType": "Bus",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MKT",&#10;    "departureDate": "2023-02-09T04:18:18",&#10;    "originLocationCode": "MNL"&#10;  },&#10;  {&#10;    "availableSeats": 30,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-02-10T08:34:29",&#10;    "originLocationCode": "MKT"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "KLG-MY",&#10;    "departureDate": "2022-12-09T13:30:00",&#10;    "originLocationCode": "BEN-SG"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "BL-SG",&#10;    "departureDate": "2023-02-17T17:35:00",&#10;    "originLocationCode": "KLG-MY"&#10;  },&#10;  {&#10;    "availableSeats": 100,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-03-09T09:25:00",&#10;    "originLocationCode": "PSG"&#10;  }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="bd125b6e-2658-4383-a3ee-9b19281f1a33" processor="ee:transform" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b3866db0-aa65-436e-9a76-6d9475a0a1d1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="d0944af6-4f4a-407f-9d36-919abc47e4d6" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="39141393-0648-4ba6-8181-5555a6460618" >
+						<munit-tools:that ><![CDATA[#[output application/json
+---
+"Invalid Transport Type"]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="ed9001dd-e74b-4fc6-8eae-58c190309ab4" >
+				<munit:attributes value='#["uriParams": {"tranportType": "invalid","transportCompany": "travelontip"}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\(transportType)\(transportCompany)\routes:retrievetravelontiproutesandschedule-sapi-config" doc:id="3e800a3d-78ac-48e4-9341-f60115686f2b" name="get:\(transportType)\(transportCompany)\routes:retrievetravelontiproutesandschedule-sapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="6dbb74b5-ed1c-4c46-90e5-944e8153cc25" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8160ce4b-25f7-4b32-b9dc-7ae5a6c781c2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call1" doc:id="0b9ad79c-0a3c-41c9-a150-dc68225188c1" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="073f536f-16bf-4d4a-8913-d687808222e8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call2" doc:id="76bf371d-ce30-4273-a0c0-d21639d9581c" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d0cb80ef-ac5a-4c1a-9ac4-1e2780bfab97" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-all-schedules-test" doc:id="d867c8b1-3c15-42f2-aa38-d36787cad485" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Request" doc:id="cd25fc08-af4e-4dc2-a9ee-746a1f1eb7fd" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="62c5bbcf-2bf8-4506-8588-433617fb3964" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;  {&#10;    "availableSeats": 40,&#10;    "transportType": "Bus",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MKT",&#10;    "departureDate": "2023-02-09T04:18:18",&#10;    "originLocationCode": "MNL"&#10;  },&#10;  {&#10;    "availableSeats": 30,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-02-10T08:34:29",&#10;    "originLocationCode": "MKT"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "KLG-MY",&#10;    "departureDate": "2022-12-09T13:30:00",&#10;    "originLocationCode": "BEN-SG"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "BL-SG",&#10;    "departureDate": "2023-02-17T17:35:00",&#10;    "originLocationCode": "KLG-MY"&#10;  },&#10;  {&#10;    "availableSeats": 100,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-03-09T09:25:00",&#10;    "originLocationCode": "PSG"&#10;  }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="4ee0d426-c56b-4003-9d12-3a0f8e8ca661" processor="choice">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="802e8176-9676-4132-a125-2fcb51545728" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="8e5f0acb-edc7-4609-be26-7336ad8ac37e" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="bf846204-85f7-4657-b869-7a18f9643d45" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload3
+---
+spy_assert_payload3::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="67737b26-7e61-419c-b56a-8adf6cdc4b75" >
+				<munit:attributes value='#["uriParams": {"tranportType": "All","transportCompany": "travelontip"}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\(transportType)\(transportCompany)\schedules:retrievetravelontiproutesandschedule-sapi-config" doc:id="f3c396e7-7d81-4a4e-bd91-d08786142a89" name="get:\(transportType)\(transportCompany)\schedules:retrievetravelontiproutesandschedule-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="entry log" doc:id="ba670a57-37db-4f7b-b360-2d79dd0924df" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="30e52056-a459-4e13-8f74-b048254dfa59" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="exit log" doc:id="3ece5aa2-4302-4bec-88b3-bd86a455b867" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="09610ec3-75ca-4bde-abf5-465d9b88cdb8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-schedules-with-location-and-transportType-test" doc:id="8c02b1b1-8f96-4fb6-a721-76c9a8851704" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Request" doc:id="64305fcd-0831-460b-9ea7-46f2eeef8d67" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="62c5bbcf-2bf8-4506-8588-433617fb3964" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;  {&#10;    "availableSeats": 40,&#10;    "transportType": "Bus",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MKT",&#10;    "departureDate": "2023-02-09T04:18:18",&#10;    "originLocationCode": "MNL"&#10;  },&#10;  {&#10;    "availableSeats": 30,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-02-10T08:34:29",&#10;    "originLocationCode": "MKT"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "KLG-MY",&#10;    "departureDate": "2022-12-09T13:30:00",&#10;    "originLocationCode": "BEN-SG"&#10;  },&#10;  {&#10;    "availableSeats": 50,&#10;    "transportType": "Flights",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "BL-SG",&#10;    "departureDate": "2023-02-17T17:35:00",&#10;    "originLocationCode": "KLG-MY"&#10;  },&#10;  {&#10;    "availableSeats": 100,&#10;    "transportType": "Train",&#10;    "companyName": "TravelOnTip",&#10;    "destinationLocationCode": "MNL",&#10;    "departureDate": "2023-03-09T09:25:00",&#10;    "originLocationCode": "PSG"&#10;  }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="29e30ec1-3494-45e3-8f92-1321e882ba16" processor="choice" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="802e8176-9676-4132-a125-2fcb51545728" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="80478eda-70a4-4b80-8e79-da5a369bfbb2" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert expression" doc:id="5c66c3e2-9f3d-43af-9046-ad1e8352d7fc" >
+						<munit-tools:that ><![CDATA[#[import sample_data::spy_assert_payload3
+---
+spy_assert_payload3::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a55314d9-7cce-4382-86c7-0b711b449196" >
+				<munit:attributes value='#[{&#10;"uriParams": {"tranportType": "All","transportCompany": "travelontip"},&#10;"queryParams":{"departureLocationCode": "BEN-SG","destinationLocationCode":"KLG-MY"}&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\(transportType)\(transportCompany)\schedules:retrievetravelontiproutesandschedule-sapi-config" doc:id="72e273ad-c0e9-421c-9826-f14bda2335ed" name="get:\(transportType)\(transportCompany)\schedules:retrievetravelontiproutesandschedule-sapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="entry log" doc:id="d0005070-2869-4fec-8ba1-e9e5e2670ba2" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="30e52056-a459-4e13-8f74-b048254dfa59" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="exit log" doc:id="efac3531-1680-469b-8a4d-8bcd8a33fb93" processor="logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="09610ec3-75ca-4bde-abf5-465d9b88cdb8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

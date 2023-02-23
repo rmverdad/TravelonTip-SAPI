@@ -16,7 +16,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</http:request>
 		<logger level="INFO" doc:name="Logger" doc:id="073f536f-16bf-4d4a-8913-d687808222e8" />
 		<choice doc:name="Choice" doc:id="802e8176-9676-4132-a125-2fcb51545728">
-			<when expression='#[vars.transportType != "all" and  vars.transportType != "All"]'>
+			<when expression='#[var type_transport =  ["BUS","FLIGHTS","VAN","SHIP","TRAIN"]&#10;---&#10;type_transport contains upper(vars.transportType)]'>
 				<ee:transform doc:name="filter by transport type" doc:id="926f7488-d8e1-4ae3-8a31-690320ae7798">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -35,8 +35,8 @@ newpayload map ((item, index) -> {
 			</ee:message>
 		</ee:transform>
 			</when>
-			<otherwise>
-				<ee:transform doc:name="filter by transport type" doc:id="b3866db0-aa65-436e-9a76-6d9475a0a1d1">
+			<when expression='#[upper(vars.transportType) == "ALL"]'>
+				<ee:transform doc:name="no filter" doc:id="b3866db0-aa65-436e-9a76-6d9475a0a1d1">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -51,6 +51,17 @@ payload map ((item, index) -> {
 })]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="invalid" doc:id="23266751-1fbc-47a0-afc5-9a87bfd50c0b">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var message = "Invalid Transport Type"
+---
+message]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
 			</otherwise>
 		</choice>
 		<logger level="INFO" doc:name="Logger" doc:id="d0cb80ef-ac5a-4c1a-9ac4-1e2780bfab97" message="Filter by transportType success" />

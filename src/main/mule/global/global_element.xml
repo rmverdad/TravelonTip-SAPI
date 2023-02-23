@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 				<set-variable value="#[message.attributes.headers.transacitonId]" doc:name="transactionId" doc:id="67e5b474-854c-49b1-aeac-4365477139dd" variableName="transactionId" />
 			</route>
 			<route >
-				<set-variable value='#[message.attributes.uriParams.transportType default "all"]' doc:name="transportType" doc:id="5a5d8060-95f3-4419-ac8f-fa1e569ca8d0" variableName="transportType" />
+				<set-variable value='#[message.attributes.uriParams.transportType]' doc:name="transportType" doc:id="5a5d8060-95f3-4419-ac8f-fa1e569ca8d0" variableName="transportType" />
 			</route>
 			<route >
 				<set-variable value="#[message.attributes.uriParams.transportCompany]" doc:name="transportCompany" doc:id="45e754cf-972e-4a60-9331-1732ce571842" variableName="company" />
